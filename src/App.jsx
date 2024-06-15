@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import * as mobilenet from "@tensorflow-models/mobilenet";
-import { FaRegObjectGroup } from "react-icons/fa6";
 
 const App = () => {
   const [cocoModelLoadTime, setCocoModelLoadTime] = useState(null);
@@ -89,106 +88,165 @@ const App = () => {
     ? "MobileNet is online"
     : "Both models are offline";
 
+  const images = [
+    { src: "./cow.jpg", alt: "Cow" },
+    { src: "./pizza.jpg", alt: "Pizza" },
+    { src: "./schoolbus.png", alt: "School Bus" },
+    { src: "./beach.jpg", alt: "Beach" },
+    { src: "./burger.jpeg", alt: "Burger" },
+    { src: "./strawberry.jpg", alt: "Strawberry" },
+    { src: "./tennisball.jpg", alt: "Tennis Ball" },
+    { src: "./phone.jpg", alt: "Phone" },
+    { src: "./dog.jpg", alt: "Dog" },
+    { src: "./apple.jpg", alt: "Apple" },
+    { src: "./icecream.jpg", alt: "Ice Cream" },
+    { src: "./dumbbell.jpg", alt: "Dumbbells" },
+  ];
+
   const statusColorClass = loading
     ? "text-yellow-500"
     : isCocoOnline || isMobileNetOnline
     ? "text-green-500"
     : "text-red-500";
 
+  const handleLogoClick = (url) => {
+    setImageURL(url);
+  };
+
+  useEffect(() => {
+    if (imageURL) {
+      handleImageLoad();
+    }
+  }, [imageURL]);
+
   return (
-    <div class="py-10 px-10">
-      <div>
+    <div class="flex flex-col md:flex-row py-10 px-10">
+      <div class="md:w-2/3 pr-5 pb-10">
         <h1 class="text-2xl font-bold">
           <img src="./logo.png" class="inline mr-2 size-7 mb-1" /> Object
           Detection
         </h1>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        <div class="flex items-center">
-          <span class={`${statusColorClass} font-semibold`}>
-            {statusMessage}
-          </span>
-          <span class="relative flex h-3 w-3 ml-2">
-            <span
-              class={
-                isCocoOnline || isMobileNetOnline
-                  ? "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
-                  : "hidden"
-              }></span>
-            <span
-              class={
-                isCocoOnline || isMobileNetOnline
-                  ? "relative inline-flex rounded-full h-3 w-3 bg-green-500"
-                  : "hidden"
-              }></span>
-          </span>
-        </div>
-        {isMobileNetOnline ? (
-          <p>
-            MobileNet Model loaded in{" "}
-            {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
-          </p>
-        ) : (
-          <p>MobileNet Model failed to load.</p>
-        )}
-        {isCocoOnline ? (
-          <p>
-            COCO-SSD Model loaded in {(cocoModelLoadTime / 1000).toFixed(2)}{" "}
-            seconds.
-          </p>
-        ) : (
-          <p>COCO-SSD Model failed to load.</p>
-        )}
-        <div class="md:max-w-[40%]">
+        <div>
+          <div class="flex items-center">
+            <span class={`${statusColorClass} font-semibold`}>
+              {statusMessage}
+            </span>
+            <span class="relative flex h-3 w-3 ml-2">
+              <span
+                class={
+                  isCocoOnline || isMobileNetOnline
+                    ? "animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+                    : "hidden"
+                }></span>
+              <span
+                class={
+                  isCocoOnline || isMobileNetOnline
+                    ? "relative inline-flex rounded-full h-3 w-3 bg-green-500"
+                    : "hidden"
+                }></span>
+            </span>
+          </div>
+          {isMobileNetOnline ? (
+            <p>
+              MobileNet Model loaded in{" "}
+              {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
+            </p>
+          ) : (
+            <p>MobileNet Model failed to load.</p>
+          )}
+          {isCocoOnline ? (
+            <p>
+              COCO-SSD Model loaded in {(cocoModelLoadTime / 1000).toFixed(2)}{" "}
+              seconds.
+            </p>
+          ) : (
+            <p>COCO-SSD Model failed to load.</p>
+          )}
           <h1 class="text-lg mt-4 font-semibold">
             Get started by uploading an image.
           </h1>
-          <p>This application will detect the object in the image.</p>
-        </div>
+          <p class="mb-4">
+            This application will detect the object in the image.
+          </p>
 
-        <br />
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-      </div>
-      {imageURL && (
-        <div>
-          <div>
-            <img
-              id="uploaded-image"
-              src={imageURL}
-              alt="Uploaded"
-              onLoad={handleImageLoad}
-              style={{ width: "auto", maxHeight: "250px" }}
-            />
-          </div>
-          <div>
-            {cocoModel && (
-              <>
-                <h3>COCO-SSD Predictions:</h3>
-                <ol>
-                  {cocoPredictions.map((prediction, index) => (
-                    <li key={index}>
-                      {prediction.class} - Probability:{" "}
-                      {Math.round(prediction.score * 100)}%
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
-            {mobileNetModel && (
-              <>
-                <h3>MobileNet Predictions:</h3>
-                <ol>
-                  {mobileNetPredictions.map((prediction, index) => (
-                    <li key={index}>
-                      {prediction.className} - Probability:{" "}
-                      {prediction.probability.toFixed(2)}
-                    </li>
-                  ))}
-                </ol>
-              </>
-            )}
-          </div>
+          <input
+            id="file-input"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+          />
         </div>
-      )}
+        {imageURL && (
+          <div class="mt-4">
+            <div>
+              <img
+                id="uploaded-image"
+                src={imageURL}
+                alt="Uploaded"
+                onLoad={handleImageLoad}
+                class="rounded-lg max-h-[250px] max-w-[250px]"
+              />
+            </div>
+            <div class="mt-4">
+              {cocoModel && (
+                <div class="mt-4">
+                  <h3 class="text-md font-bold mb-2">COCO-SSD Predictions:</h3>
+                  {cocoPredictions.length > 0 ? (
+                    <ol class="list-decimal pl-5">
+                      {cocoPredictions.map((prediction, index) => (
+                        <li key={index}>
+                          <span className="font-bold">{prediction.class}:</span>{" "}
+                          Probability: {prediction.score.toFixed(2)}
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p>No COCO-SSD predictions found.</p>
+                  )}
+                </div>
+              )}
+              {mobileNetModel && (
+                <div class="mt-4">
+                  <h3 class="text-md font-bold mb-2">MobileNet Predictions:</h3>
+                  {mobileNetPredictions.length > 0 ? (
+                    <ul class="list-decimal pl-5">
+                      {mobileNetPredictions.map((prediction, index) => (
+                        <li key={index}>
+                          <span className="font-bold">
+                            {prediction.className}:
+                          </span>{" "}
+                          Probability: {prediction.probability.toFixed(2)}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No MobileNet predictions found.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+      <div class="md:w-1/3">
+        <h1 class="text-2xl font-bold">
+          <img src="./smiley.png" class="inline mr-2 size-7 mb-1" /> Try It!
+        </h1>
+        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+        <p>Click images below to try out the Tensor Flow models.</p>
+        <div className="grid grid-cols-4 gap-4 mt-4">
+          {images.map((image, index) => (
+            <img
+              key={index}
+              src={image.src}
+              alt={image.alt}
+              className="w-full h-full object-cover rounded"
+              onClick={() => handleLogoClick(image.src)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
