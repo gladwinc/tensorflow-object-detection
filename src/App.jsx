@@ -8,7 +8,10 @@ const App = () => {
   const [mobileNetModelLoadTime, setMobileNetModelLoadTime] = useState(null);
   const [isCocoOnline, setIsCocoOnline] = useState(false);
   const [isMobileNetOnline, setIsMobileNetOnline] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingCoco, setLoadingCoco] = useState(false);
+  const [loadingMobileNet, setLoadingMobileNet] = useState(false);
+  const [errorCoco, setErrorCoco] = useState(null);
+  const [errorMobileNet, setErrorMobileNet] = useState(null);
   const [imageURL, setImageURL] = useState(null);
   const [cocoPredictions, setCocoPredictions] = useState([]);
   const [mobileNetPredictions, setMobileNetPredictions] = useState([]);
@@ -17,24 +20,26 @@ const App = () => {
 
   useEffect(() => {
     const loadCocoModel = async () => {
+      setLoadingCoco(true);
       try {
-        setLoading(true);
         const cocoStartTime = performance.now();
         const model = await cocoSsd.load();
         const cocoEndTime = performance.now();
         setCocoModel(model);
         setCocoModelLoadTime((cocoEndTime - cocoStartTime).toFixed(2));
         setIsCocoOnline(true);
+        setErrorCoco(null);
       } catch (error) {
         setIsCocoOnline(false);
+        setErrorCoco("Failed to load COCO-SSD model.");
       } finally {
-        setLoading(false);
+        setLoadingCoco(false);
       }
     };
 
     const loadMobileNetModel = async () => {
+      setLoadingMobileNet(true);
       try {
-        setLoading(true);
         const mobileNetStartTime = performance.now();
         const model = await mobilenet.load();
         const mobileNetEndTime = performance.now();
@@ -43,10 +48,12 @@ const App = () => {
           (mobileNetEndTime - mobileNetStartTime).toFixed(2)
         );
         setIsMobileNetOnline(true);
+        setErrorMobileNet(null);
       } catch (error) {
         setIsMobileNetOnline(false);
+        setErrorMobileNet("Failed to load MobileNet model.");
       } finally {
-        setLoading(false);
+        setLoadingMobileNet(false);
       }
     };
 
@@ -78,15 +85,16 @@ const App = () => {
     }
   };
 
-  const statusMessage = loading
-    ? "Loading..."
-    : isCocoOnline && isMobileNetOnline
-    ? "Online"
-    : isCocoOnline
-    ? "COCO-SSD is online"
-    : isMobileNetOnline
-    ? "MobileNet is online"
-    : "Both models are offline";
+  const statusMessage =
+    loadingCoco || loadingMobileNet
+      ? "Loading..."
+      : isCocoOnline && isMobileNetOnline
+      ? "Both models are online"
+      : isCocoOnline
+      ? "COCO-SSD is online"
+      : isMobileNetOnline
+      ? "MobileNet is online"
+      : "Both models are offline";
 
   const images = [
     { src: "./cow.jpg", alt: "Cow" },
@@ -103,11 +111,12 @@ const App = () => {
     { src: "./car.jpg", alt: "Car" },
   ];
 
-  const statusColorClass = loading
-    ? "text-yellow-500"
-    : isCocoOnline || isMobileNetOnline
-    ? "text-green-500"
-    : "text-red-500";
+  const statusColorClass =
+    loadingCoco || loadingMobileNet
+      ? "text-yellow-500"
+      : isCocoOnline || isMobileNetOnline
+      ? "text-green-500"
+      : "text-red-500";
 
   const handleLogoClick = (url) => {
     setImageURL(url);
@@ -147,21 +156,29 @@ const App = () => {
                 }></span>
             </span>
           </div>
-          {isCocoOnline ? (
-            <p>
-              COCO-SSD Model loaded in {(cocoModelLoadTime / 1000).toFixed(2)}{" "}
-              seconds.
-            </p>
+          {loadingCoco ? (
+            <p>Loading COCO-SSD model...</p>
+          ) : errorCoco ? (
+            <p>{errorCoco}</p>
           ) : (
-            <p>COCO-SSD Model failed to load.</p>
+            isCocoOnline && (
+              <p>
+                COCO-SSD Model loaded in {(cocoModelLoadTime / 1000).toFixed(2)}{" "}
+                seconds.
+              </p>
+            )
           )}
-          {isMobileNetOnline ? (
-            <p>
-              MobileNet Model loaded in{" "}
-              {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
-            </p>
+          {loadingMobileNet ? (
+            <p>Loading MobileNet model...</p>
+          ) : errorMobileNet ? (
+            <p>{errorMobileNet}</p>
           ) : (
-            <p>MobileNet Model failed to load.</p>
+            isMobileNetOnline && (
+              <p>
+                MobileNet Model loaded in{" "}
+                {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
+              </p>
+            )
           )}
           <h1 class="text-lg mt-4 font-semibold">
             Get started by uploading an image.
@@ -213,9 +230,7 @@ const App = () => {
                     <ul class="list-decimal pl-5">
                       {mobileNetPredictions.map((prediction, index) => (
                         <li key={index}>
-                          <span className="font-bold">
-                            {prediction.className}:
-                          </span>{" "}
+                          <span class="font-bold">{prediction.className}:</span>{" "}
                           Probability: {prediction.probability.toFixed(2)}
                         </li>
                       ))}
