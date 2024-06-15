@@ -122,8 +122,8 @@ const App = () => {
   return (
     <div class="flex flex-col py-10 px-10 md:flex-row md:px-20">
       <div class="md:w-2/3 pb-10">
-        <h1 class="text-2xl font-bold">
-          <img src="./logo.png" class="inline mr-2 size-7 mb-1" /> Object
+        <h1 class="flex items-center text-2xl font-bold pr-7">
+          <img src="./logo.png" class="inline mr-3 size-7 mb-1" /> Object
           Detection
         </h1>
         <hr class="h-px md:w-4/5 my-2 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -235,9 +235,8 @@ const App = () => {
         </h1>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
         <p>
-          Click on the images below to test the{" "}
-          <span class="italic">TensorFlow</span>{" "}
-          <img src="./tensorflow.png" class="inline size-4 mb-1" /> models.
+          Click on the images below to test the pre-trained deep learning
+          models.
         </p>
         <div class="grid grid-cols-3 gap-4 mt-4">
           {images.map((image, index) => (
