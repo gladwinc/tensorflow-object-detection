@@ -92,15 +92,15 @@ const App = () => {
     { src: "./cow.jpg", alt: "Cow" },
     { src: "./pizza.jpg", alt: "Pizza" },
     { src: "./schoolbus.png", alt: "School Bus" },
-    { src: "./beach.jpg", alt: "Beach" },
+    { src: "./tennisball.jpg", alt: "Tennis Ball" },
     { src: "./burger.jpeg", alt: "Burger" },
     { src: "./strawberry.jpg", alt: "Strawberry" },
-    { src: "./tennisball.jpg", alt: "Tennis Ball" },
-    { src: "./phone.jpg", alt: "Phone" },
+    { src: "./beach.jpg", alt: "Beach" },
     { src: "./dog.jpg", alt: "Dog" },
     { src: "./apple.jpg", alt: "Apple" },
     { src: "./icecream.jpg", alt: "Ice Cream" },
     { src: "./dumbbell.jpg", alt: "Dumbbells" },
+    { src: "./car.jpg", alt: "Car" },
   ];
 
   const statusColorClass = loading
@@ -196,7 +196,7 @@ const App = () => {
                     <ol class="list-decimal pl-5">
                       {cocoPredictions.map((prediction, index) => (
                         <li key={index}>
-                          <span className="font-bold">{prediction.class}:</span>{" "}
+                          <span class="font-bold">{prediction.class}:</span>{" "}
                           Probability: {prediction.score.toFixed(2)}
                         </li>
                       ))}
@@ -234,14 +234,18 @@ const App = () => {
           <img src="./smiley.png" class="inline mr-2 size-7 mb-1" /> Try It!
         </h1>
         <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
-        <p>Click images below to try out the Tensor Flow models.</p>
-        <div className="grid grid-cols-4 gap-4 mt-4">
+        <p>
+          Click on the images below to test the{" "}
+          <span class="italic">TensorFlow</span>{" "}
+          <img src="./tensorflow.png" class="inline size-4 mb-1" /> models.
+        </p>
+        <div class="grid grid-cols-3 gap-4 mt-4">
           {images.map((image, index) => (
             <img
               key={index}
               src={image.src}
               alt={image.alt}
-              className="w-full h-full object-cover rounded"
+              class="w-full h-full object-cover rounded"
               onClick={() => handleLogoClick(image.src)}
             />
           ))}
