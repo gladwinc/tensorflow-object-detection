@@ -120,13 +120,13 @@ const App = () => {
   }, [imageURL]);
 
   return (
-    <div class="flex flex-col  py-10 px-10 md:flex-row md:px-20">
-      <div class="md:w-2/3 pr-5 pb-10">
+    <div class="flex flex-col py-10 px-10 md:flex-row md:px-20">
+      <div class="md:w-2/3 pb-10">
         <h1 class="text-2xl font-bold">
           <img src="./logo.png" class="inline mr-2 size-7 mb-1" /> Object
           Detection
         </h1>
-        <hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+        <hr class="h-px md:w-4/5 my-2 bg-gray-200 border-0 dark:bg-gray-700" />
         <div>
           <div class="flex items-center">
             <span class={`${statusColorClass} font-semibold`}>
