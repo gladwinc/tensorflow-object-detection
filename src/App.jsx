@@ -147,14 +147,6 @@ const App = () => {
                 }></span>
             </span>
           </div>
-          {isMobileNetOnline ? (
-            <p>
-              MobileNet Model loaded in{" "}
-              {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
-            </p>
-          ) : (
-            <p>MobileNet Model failed to load.</p>
-          )}
           {isCocoOnline ? (
             <p>
               COCO-SSD Model loaded in {(cocoModelLoadTime / 1000).toFixed(2)}{" "}
@@ -162,6 +154,14 @@ const App = () => {
             </p>
           ) : (
             <p>COCO-SSD Model failed to load.</p>
+          )}
+          {isMobileNetOnline ? (
+            <p>
+              MobileNet Model loaded in{" "}
+              {(mobileNetModelLoadTime / 1000).toFixed(2)} seconds.
+            </p>
+          ) : (
+            <p>MobileNet Model failed to load.</p>
           )}
           <h1 class="text-lg mt-4 font-semibold">
             Get started by uploading an image.
