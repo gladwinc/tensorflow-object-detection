@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import * as mobilenet from "@tensorflow-models/mobilenet";
+import Groq from "groq-sdk";
 
 const App = () => {
   const [cocoModelLoadTime, setCocoModelLoadTime] = useState(null);
@@ -17,6 +18,7 @@ const App = () => {
   const [mobileNetPredictions, setMobileNetPredictions] = useState([]);
   const [cocoModel, setCocoModel] = useState(null);
   const [mobileNetModel, setMobileNetModel] = useState(null);
+  const [groqResponse, setGroqResponse] = useState(null);
 
   useEffect(() => {
     const loadCocoModel = async () => {
@@ -82,6 +84,36 @@ const App = () => {
     if (mobileNetModel && imageURL) {
       const mobileNetPredictions = await mobileNetModel.classify(imageElement);
       setMobileNetPredictions(mobileNetPredictions);
+      sendPredictionsToGroq(mobileNetPredictions);
+    }
+  };
+
+  const sendPredictionsToGroq = async (predictions) => {
+    try {
+      const groq = new Groq({
+        apiKey: import.meta.env.VITE_GROQ_API_KEY,
+        dangerouslyAllowBrowser: true,
+      });
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: `What is a ${JSON.stringify(
+              predictions[0].className
+            )} Keep the answer short`,
+          },
+        ],
+        model: "llama3-8b-8192",
+        temperature: 1,
+        max_tokens: 1024,
+        top_p: 1,
+        stream: false,
+        stop: null,
+      });
+
+      setGroqResponse(chatCompletion.choices[0].message.content);
+    } catch (error) {
+      console.error("Error fetching Groq response:", error);
     }
   };
 
@@ -243,6 +275,15 @@ const App = () => {
             </div>
           </div>
         )}
+        <div>
+          <h1 class="flex items-center text-2xl font-bold pr-7 pt-8">
+            <img src="./puzzle.png" class="inline mr-3 size-7 mb-1" /> What is
+            it?
+          </h1>
+          <hr class="h-px md:w-4/5 my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+          <p>AI responses powered by Groq.</p>
+          <p class="mt-4 md:w-4/5">{groqResponse}</p>
+        </div>
       </div>
       <div class="md:w-1/3">
         <h1 class="text-2xl font-bold">
